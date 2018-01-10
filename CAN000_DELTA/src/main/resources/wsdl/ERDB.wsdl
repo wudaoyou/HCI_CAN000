@@ -1,0 +1,3667 @@
+<?xml version="1.0" encoding="UTF-8"?><wsdl:definitions name="EmployeeEventHandlerService" targetNamespace="http://costco.com/svc/businessAdministrationAndFinancials/HumanResources/EmployeeEventHandler/external/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:tns="http://costco.com/svc/businessAdministrationAndFinancials/HumanResources/EmployeeEventHandler/external/" xmlns:tns1="http://costco.com/svc/businessAdministrationAndFinancials/HumanResources/EmployeeEventHandler/v1/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<wsdl:types>
+<xsd:schema xmlns:xsd_1="http://costco.com/cmm/common/v2/" targetNamespace="http://costco.com/cmm/common/v2/" version="2.3">
+<xsd:complexType name="FaultType">
+<xsd:sequence>
+<xsd:element name="Context" type="xsd_1:ServiceResultContextType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Represents the contextual information associated with the fault.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType abstract="true" name="GlobalContextType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A type representing the common elements expected in all 'Context' elements for request, response, and event messages.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="MessageName" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>A unique name describing the message. All messages of the same type should carry the same 'MesageName' value. </p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Timestamp" type="xsd:dateTime">
+<xsd:annotation>
+<xsd:documentation>
+<p>The time-stamp at which the message was created.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="SendingApplication" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>The name of the client/application sending the message. It allows client to uniquely identify itself for tracking or logging purposes.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="TrackingId" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>A globally unique id used to identify and correlate the transaction through various layers of distributed architecture. All endpoints processing this message should propagate the same tracking id value to downstream service calls or created messages, and for request and response message pattern, the same tracking id value should be returned with the response message.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="LocalizedStringType">
+<xsd:simpleContent>
+<xsd:extension base="xsd:string">
+<xsd:attribute name="LocaleCode" type="xsd:language"/>
+</xsd:extension>
+</xsd:simpleContent>
+</xsd:complexType>
+<xsd:complexType name="ServiceResultContextType">
+<xsd:annotation>
+<xsd:documentation>
+<p>An extension of GlobalContextType which contains contextual information specific to the service response.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="xsd_1:GlobalContextType">
+<xsd:sequence>
+<xsd:element name="StatusMessage" type="xsd_1:StatusMessageType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Reflects the overall status of the response.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element maxOccurs="unbounded" minOccurs="0" name="AdditionalStatusMessage" type="xsd_1:StatusMessageType">
+<xsd:annotation>
+<xsd:documentation>
+<p> Reflects any additional associated status messages that need to be reflected back to the consumer.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+<xsd:simpleType name="StatusCodeType">
+<xsd:restriction base="xsd:string">
+<xsd:enumeration value="Success">
+<xsd:annotation>
+<xsd:documentation>
+<p>Represents an overall successful completion of the operation; should not be used for AdditionalStatusMessages' status codes.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:enumeration>
+<xsd:enumeration value="Information">
+<xsd:annotation>
+<xsd:documentation>
+<p>Represents an informational messages; should only be used for AdditionalStatusMessages' status codes.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:enumeration>
+<xsd:enumeration value="Warning">
+<xsd:annotation>
+<xsd:documentation>
+<p>The operation completed with some caveat; generally reserved for AdditionalStatusMessages.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:enumeration>
+<xsd:enumeration value="Error">
+<xsd:annotation>
+<xsd:documentation>
+<p>Some (generally recoverable) business error occurred; typically means that the user sent an invalid request, or the request was against stale information that has since been updated, etc.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:enumeration>
+<xsd:enumeration value="Fatal">
+<xsd:annotation>
+<xsd:documentation>
+<p>Represents an internal server error (which may or may not be recoverable).</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:enumeration>
+</xsd:restriction>
+</xsd:simpleType>
+<xsd:complexType name="StatusMessageType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A data type which is used to reflect a status message typically corresponding to the result of an operation being performed.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element name="StatusCode" type="xsd_1:StatusCodeType">
+<xsd:annotation>
+<xsd:documentation>
+<p>An enumeration value describing the overall nature of the message; the 'Information' and 'Warning' values should be reserved for 'AdditionalStatusMessage' element values.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ErrorCode" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation><p>A code representing the error.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ErrorLocationId" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>A globally unique description of where the error originated; for example, this may include the name of the service/application, followed by a path to the location within code that triggered the error.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ErrorInstanceId" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>A globally unique identifier for this individual error instance.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element maxOccurs="unbounded" minOccurs="0" name="Description" type="xsd_1:LocalizedStringType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Human-readable descriptive text corresponding to the 'ErrorCode' value provided.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:schema>
+<xsd:schema xmlns:xsd_1="http://costco.com/cdm/Reference/v2/" targetNamespace="http://costco.com/cdm/Reference/v2/" version="2.27">
+<xsd:complexType name="CountrySubdivisionType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A principal administrative division of a country.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="AbbreviatedName" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Abbreviated text by which the country subdivision is known. This is the second part of the ISO code following the '-'. E.g., WA is Washington state.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ISOCode" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Code for the subdivision as defined by ISO 3166-2. Full code is concatenation of two character country code, a dash and an abbreviation for the subdivision; e.g., US-WA is Washington state.</p><p></p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Name" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Text by which this country subdivision is known.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Category" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>ISO 3166-2 designated name that indicates the type of country subdivision. Examples include: province, district, county, parish, federal district, city, territory, state municipality, prefecture,etc. http://en.wikipedia.org/wiki/ISO_3166-2.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="ISOLanguageType">
+<xsd:annotation>
+<xsd:documentation>
+<p>System of communication as defined by ISO 639.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Name" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation><p>Label by which the language is known.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ISO2CharacterLanguageCode" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Two-character representation of a language as defined by ISO 639-1.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ISO3CharacterLanguageCode" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Three-character representation of a language as defined by ISO 639-1.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="LocalizedStringType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A text field annotated with an attribute indicating the language in which the text is expressed.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:simpleContent>
+<xsd:extension base="xsd:string">
+<xsd:attribute default="en-US" name="LocaleCode" type="xsd:language">
+<xsd:annotation>
+<xsd:documentation><p>The language in which text is expressed.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:attribute>
+</xsd:extension>
+</xsd:simpleContent>
+</xsd:complexType>
+<xsd:complexType name="RefDateType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Common structure of reference data consisting of a code, description, and start/end dates.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Code" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation><p>Short-hand label.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Description" type="xsd_1:LocalizedStringType">
+<xsd:annotation>
+<xsd:documentation><p>Name.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="StartDate" type="xsd:dateTime">
+<xsd:annotation>
+<xsd:documentation>
+<p>The first date on which this applies to the entity.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EndDate" type="xsd:dateTime">
+<xsd:annotation>
+<xsd:documentation>
+<p>The last date on which this applies to the entity.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="RefNameType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Common structure of reference data consisting of a code and names in one or more languages.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Number" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation><p>Short-hand label.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Name" type="xsd_1:LocalizedStringType">
+<xsd:annotation>
+<xsd:documentation><p>Name.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Common structure of reference data consisting of a code and names in one or more languages.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Code" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation><p>Short-hand label.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Description" type="xsd_1:LocalizedStringType">
+<xsd:annotation>
+<xsd:documentation><p>Name.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="UTCTimeZoneType">
+<xsd:annotation>
+<xsd:documentation><p>An internationally recognized time zone.</p></xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="StandardName" type="xsd_1:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Time zone name recognized in the U.S.A., e.g., PST.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="LocalName" type="xsd_1:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Time zone name recognized in a local region; e.g., America/Montreal.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="UTCOffsetHours" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>The number of hours variance between UTC and the time zone this address is in.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="DSTStartDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The date on which daylight savings time starts.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="DSTEndDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The date on which daylight savings time ends.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:schema>
+<xsd:schema xmlns:xsd_1="http://costco.com/cdm/FinancialTransaction/Currency/v1/" targetNamespace="http://costco.com/cdm/FinancialTransaction/Currency/v1/" version="1.0">
+<xsd:complexType name="CurrencyType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A system of money in use in a particular country.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Name" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation><p>Text by which the currency is known.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ISO3CharacterCurrencyCode" type="xsd_1:ISO3CharacterCurrencyCodeEnumeration"/>
+<xsd:element minOccurs="0" name="ISO3DigitCurrencyCode" type="xsd_1:ISO3DigitCurrencyCodeEnumeration"/>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:simpleType name="ISO3CharacterCurrencyCodeEnumeration">
+<xsd:annotation>
+<xsd:documentation>
+<p>List of three-character currency codes defined in ISO 4217 and published by the International Organization for Standardization.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:restriction base="xsd:string">
+<xsd:enumeration value="ADP"/>
+<xsd:enumeration value="AED"/>
+<xsd:enumeration value="AFA"/>
+<xsd:enumeration value="ALL"/>
+<xsd:enumeration value="ANG"/>
+<xsd:enumeration value="AMD"/>
+<xsd:enumeration value="AOA"/>
+<xsd:enumeration value="ARS"/>
+<xsd:enumeration value="ATS"/>
+<xsd:enumeration value="AUD"/>
+<xsd:enumeration value="AWG"/>
+<xsd:enumeration value="AZM"/>
+<xsd:enumeration value="BAM"/>
+<xsd:enumeration value="BBD"/>
+<xsd:enumeration value="BDT"/>
+<xsd:enumeration value="BEF"/>
+<xsd:enumeration value="BGL"/>
+<xsd:enumeration value="BGN"/>
+<xsd:enumeration value="BHD"/>
+<xsd:enumeration value="BIF"/>
+<xsd:enumeration value="BMD"/>
+<xsd:enumeration value="BND"/>
+<xsd:enumeration value="BOB"/>
+<xsd:enumeration value="BOV"/>
+<xsd:enumeration value="BRL"/>
+<xsd:enumeration value="BSD"/>
+<xsd:enumeration value="BTN"/>
+<xsd:enumeration value="BWP"/>
+<xsd:enumeration value="BYR"/>
+<xsd:enumeration value="BZD"/>
+<xsd:enumeration value="CAD"/>
+<xsd:enumeration value="CDF"/>
+<xsd:enumeration value="CHF"/>
+<xsd:enumeration value="CLF"/>
+<xsd:enumeration value="CLP"/>
+<xsd:enumeration value="CNY"/>
+<xsd:enumeration value="COP"/>
+<xsd:enumeration value="CRC"/>
+<xsd:enumeration value="CUP"/>
+<xsd:enumeration value="CVE"/>
+<xsd:enumeration value="CYP"/>
+<xsd:enumeration value="CZK"/>
+<xsd:enumeration value="DEM"/>
+<xsd:enumeration value="DJF"/>
+<xsd:enumeration value="DKK"/>
+<xsd:enumeration value="DOP"/>
+<xsd:enumeration value="DZD"/>
+<xsd:enumeration value="ECS"/>
+<xsd:enumeration value="ECV"/>
+<xsd:enumeration value="EEK"/>
+<xsd:enumeration value="EGP"/>
+<xsd:enumeration value="ERN"/>
+<xsd:enumeration value="ESP"/>
+<xsd:enumeration value="ETB"/>
+<xsd:enumeration value="EUR"/>
+<xsd:enumeration value="FIM"/>
+<xsd:enumeration value="FJD"/>
+<xsd:enumeration value="FKP"/>
+<xsd:enumeration value="FRF"/>
+<xsd:enumeration value="GBP"/>
+<xsd:enumeration value="GEL"/>
+<xsd:enumeration value="GHC"/>
+<xsd:enumeration value="GIP"/>
+<xsd:enumeration value="GMD"/>
+<xsd:enumeration value="GNF"/>
+<xsd:enumeration value="GRD"/>
+<xsd:enumeration value="GTQ"/>
+<xsd:enumeration value="GWP"/>
+<xsd:enumeration value="GYD"/>
+<xsd:enumeration value="HKD"/>
+<xsd:enumeration value="HNL"/>
+<xsd:enumeration value="HRK"/>
+<xsd:enumeration value="HTG"/>
+<xsd:enumeration value="HUF"/>
+<xsd:enumeration value="IDR"/>
+<xsd:enumeration value="IEP"/>
+<xsd:enumeration value="ILS"/>
+<xsd:enumeration value="INR"/>
+<xsd:enumeration value="IQD"/>
+<xsd:enumeration value="IRR"/>
+<xsd:enumeration value="ISK"/>
+<xsd:enumeration value="ITL"/>
+<xsd:enumeration value="JMD"/>
+<xsd:enumeration value="JOD"/>
+<xsd:enumeration value="JPY"/>
+<xsd:enumeration value="KES"/>
+<xsd:enumeration value="KGS"/>
+<xsd:enumeration value="KHR"/>
+<xsd:enumeration value="KMF"/>
+<xsd:enumeration value="KPW"/>
+<xsd:enumeration value="KRW"/>
+<xsd:enumeration value="KWD"/>
+<xsd:enumeration value="KYD"/>
+<xsd:enumeration value="KZT"/>
+<xsd:enumeration value="LAK"/>
+<xsd:enumeration value="LBP"/>
+<xsd:enumeration value="LKR"/>
+<xsd:enumeration value="LRD"/>
+<xsd:enumeration value="LSL"/>
+<xsd:enumeration value="LTL"/>
+<xsd:enumeration value="LUF"/>
+<xsd:enumeration value="LVL"/>
+<xsd:enumeration value="LYD"/>
+<xsd:enumeration value="MAD"/>
+<xsd:enumeration value="MDL"/>
+<xsd:enumeration value="MGF"/>
+<xsd:enumeration value="MKD"/>
+<xsd:enumeration value="MMK"/>
+<xsd:enumeration value="MNT"/>
+<xsd:enumeration value="MOP"/>
+<xsd:enumeration value="MRO"/>
+<xsd:enumeration value="MTL"/>
+<xsd:enumeration value="MUR"/>
+<xsd:enumeration value="MVR"/>
+<xsd:enumeration value="MWK"/>
+<xsd:enumeration value="MXN"/>
+<xsd:enumeration value="MXV"/>
+<xsd:enumeration value="MYR"/>
+<xsd:enumeration value="MZM"/>
+<xsd:enumeration value="NAD"/>
+<xsd:enumeration value="NGN"/>
+<xsd:enumeration value="NIO"/>
+<xsd:enumeration value="NLG"/>
+<xsd:enumeration value="NOK"/>
+<xsd:enumeration value="NPR"/>
+<xsd:enumeration value="NZD"/>
+<xsd:enumeration value="OMR"/>
+<xsd:enumeration value="PAB"/>
+<xsd:enumeration value="PEN"/>
+<xsd:enumeration value="PGK"/>
+<xsd:enumeration value="PHP"/>
+<xsd:enumeration value="PKR"/>
+<xsd:enumeration value="PLN"/>
+<xsd:enumeration value="PTE"/>
+<xsd:enumeration value="PYG"/>
+<xsd:enumeration value="QAR"/>
+<xsd:enumeration value="ROL"/>
+<xsd:enumeration value="RUB"/>
+<xsd:enumeration value="RUR"/>
+<xsd:enumeration value="RWF"/>
+<xsd:enumeration value="SAR"/>
+<xsd:enumeration value="SBD"/>
+<xsd:enumeration value="SCR"/>
+<xsd:enumeration value="SDD"/>
+<xsd:enumeration value="SEK"/>
+<xsd:enumeration value="SGD"/>
+<xsd:enumeration value="SHP"/>
+<xsd:enumeration value="SIT"/>
+<xsd:enumeration value="SKK"/>
+<xsd:enumeration value="SLL"/>
+<xsd:enumeration value="SOS"/>
+<xsd:enumeration value="SRG"/>
+<xsd:enumeration value="STD"/>
+<xsd:enumeration value="SVC"/>
+<xsd:enumeration value="SYP"/>
+<xsd:enumeration value="SZL"/>
+<xsd:enumeration value="THB"/>
+<xsd:enumeration value="TJS"/>
+<xsd:enumeration value="TMM"/>
+<xsd:enumeration value="TND"/>
+<xsd:enumeration value="TOP"/>
+<xsd:enumeration value="TPE"/>
+<xsd:enumeration value="TRL"/>
+<xsd:enumeration value="TTD"/>
+<xsd:enumeration value="TWD"/>
+<xsd:enumeration value="TZS"/>
+<xsd:enumeration value="UAH"/>
+<xsd:enumeration value="UGX"/>
+<xsd:enumeration value="USD"/>
+<xsd:enumeration value="USN"/>
+<xsd:enumeration value="USS"/>
+<xsd:enumeration value="UYU"/>
+<xsd:enumeration value="UZS"/>
+<xsd:enumeration value="VEB"/>
+<xsd:enumeration value="VND"/>
+<xsd:enumeration value="VUV"/>
+<xsd:enumeration value="WST"/>
+<xsd:enumeration value="XAF"/>
+<xsd:enumeration value="XAG"/>
+<xsd:enumeration value="XAU"/>
+<xsd:enumeration value="XBA"/>
+<xsd:enumeration value="XBB"/>
+<xsd:enumeration value="XBC"/>
+<xsd:enumeration value="XCD"/>
+<xsd:enumeration value="XDR"/>
+<xsd:enumeration value="XFO"/>
+<xsd:enumeration value="XFU"/>
+<xsd:enumeration value="XOF"/>
+<xsd:enumeration value="XPD"/>
+<xsd:enumeration value="XPF"/>
+<xsd:enumeration value="XPT"/>
+<xsd:enumeration value="XTS"/>
+<xsd:enumeration value="YER"/>
+<xsd:enumeration value="YUM"/>
+<xsd:enumeration value="ZAR"/>
+<xsd:enumeration value="ZMK"/>
+<xsd:enumeration value="ZWD"/>
+</xsd:restriction>
+</xsd:simpleType>
+<xsd:simpleType name="ISO3DigitCurrencyCodeEnumeration">
+<xsd:annotation>
+<xsd:documentation>
+<p>List of three-digit currency codes defined in ISO 4217 and published by the International Organization for Standardization.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:restriction base="xsd:string">
+<xsd:enumeration value="004"/>
+<xsd:enumeration value="008"/>
+<xsd:enumeration value="012"/>
+<xsd:enumeration value="020"/>
+<xsd:enumeration value="031"/>
+<xsd:enumeration value="032"/>
+<xsd:enumeration value="840"/>
+<xsd:enumeration value="724"/>
+<xsd:enumeration value="250"/>
+<xsd:enumeration value="973"/>
+<xsd:enumeration value="951"/>
+<xsd:enumeration value="051"/>
+<xsd:enumeration value="533"/>
+<xsd:enumeration value="036"/>
+<xsd:enumeration value="040"/>
+<xsd:enumeration value="044"/>
+<xsd:enumeration value="048"/>
+<xsd:enumeration value="050"/>
+<xsd:enumeration value="052"/>
+</xsd:restriction>
+</xsd:simpleType>
+<xsd:complexType name="MoneyType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Medium of exchange, denominated in the stated currency, equal in value to the stated amount.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Currency" type="xsd_1:CurrencyType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The system of money in which the amount is expressed.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Amount" type="xsd:decimal">
+<xsd:annotation>
+<xsd:documentation>
+<p>Quantity of value, expressed in the given currency.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:schema>
+<xsd:schema xmlns:xsd_1="http://costco.com/cdm/Party/Individual/v6/" targetNamespace="http://costco.com/cdm/Party/Individual/v6/" version="6.0">
+<xsd:simpleType name="GenderEnumeration">
+<xsd:annotation>
+<xsd:documentation><p>List of gender denotations.</p></xsd:documentation>
+</xsd:annotation>
+<xsd:restriction base="xsd:string">
+<xsd:enumeration value="Male"/>
+<xsd:enumeration value="Female"/>
+<xsd:enumeration value="Unknown"/>
+<xsd:enumeration value="Intersex"/>
+<xsd:enumeration value="Transgender"/>
+</xsd:restriction>
+</xsd:simpleType>
+<xsd:complexType name="GenderType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The range of physical, biological, mental and behavioral characteristics pertaining to, and differentiating between, masculinity and femininity.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Code" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Short-hand text by which the instance of reference data is known.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Description" type="xsd_1:GenderEnumeration"/>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:simpleType name="IdentificationValidationDescriptionTypeEnumeration">
+<xsd:annotation>
+<xsd:documentation>
+<p>List of mechanisms used for identifying a person. E.g., driver's license, social security number.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:restriction base="xsd:string">
+<xsd:enumeration value="CreditCard"/>
+<xsd:enumeration value="DriversLicense"/>
+<xsd:enumeration value="Passport"/>
+<xsd:enumeration value="SocialSecurityNumber"/>
+<xsd:enumeration value="MilitaryID"/>
+<xsd:enumeration value="TaxID"/>
+<xsd:enumeration value="StateIdentificationCard"/>
+<xsd:enumeration value="USCommercialDriversLicense"/>
+<xsd:enumeration value="CanadianArmedForcesIdentificationCard"/>
+<xsd:enumeration value="CitizenshipCertificate"/>
+<xsd:enumeration value="PermanentResidenceCard"/>
+<xsd:enumeration value="NativeStatusCard"/>
+<xsd:enumeration value="ProvincialIdentificationCard"/>
+<xsd:enumeration value="SocialInsuranceNumber"/>
+</xsd:restriction>
+</xsd:simpleType>
+</xsd:schema>
+<xsd:schema xmlns:xsd_1="http://costco.com/cdm/HumanResource/Employee/v6/" xmlns:xsd_2="http://costco.com/cdm/Reference/v2/" xmlns:xsd_3="http://costco.com/cdm/FinancialTransaction/Currency/v1/" xmlns:xsd_4="http://costco.com/cdm/ContactPoint/v6/" xmlns:xsd_5="http://costco.com/cdm/Identity/v1/" xmlns:xsd_6="http://costco.com/cdm/Party/Individual/v6/" targetNamespace="http://costco.com/cdm/HumanResource/Employee/v6/" version="6.1">
+<xsd:complexType name="EmployeeAddressChangeType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A physical space where the employee or location resides, or where mail or deliveries can be made.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Action" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>The activity affecting this information; e.g., Change, Delete, Insert.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="SourceDateTime" type="xsd:dateTime">
+<xsd:annotation>
+<xsd:documentation>
+<p>The date and time the information was created, modified, or deleted in the source system. </p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="StartDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The first date on which this address is in effect for the employee.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EndDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The last date on which this address is in effect for the employee.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Purpose" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The usage of this address, as defined by the employee; e.g., mailing, shipping.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Line1" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Text appearing on the first line of a formatted address.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Line2" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Text appearing on the second line of a formatted address.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Line3" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Text appearing on the third line of a formatted address.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Line4" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Text appearing on the fourth line of a formatted address.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Line5" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Text appearing on the fifth line of a formatted address.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Line6" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Text appearing on the sixth line of a formatted address.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="City" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>An incorporated city municipality; a subdivision of a territory.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="MinorSubdivision" type="xsd_2:CountrySubdivisionType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A political and administrative division of the major subdivision. This is a county in the U.S.A.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="MajorSubdivision" type="xsd_2:CountrySubdivisionType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A territorial division of a country. This is the state in the U.S.A. and the province in Canada.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PostalCode" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>A group of numbers or characters used to identity a mail delivery area.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Country" type="xsd_5:CountryIdentificationNameType">
+<xsd:annotation>
+<xsd:documentation><p>Nation controlled by its own government.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Latitude" type="xsd:float">
+<xsd:annotation>
+<xsd:documentation>
+<p>The angular distance north or south of the earth's equator, measured in degrees along a meridian.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Longitude" type="xsd:float">
+<xsd:annotation>
+<xsd:documentation>
+<p>Angular distance on the earth's surface, measured east or west from the prime meridian at Greenwich, England.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="GeoText" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Free-form text comprising spatial information.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="StandardTimeZone" type="xsd_2:UTCTimeZoneType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The standard time zone in which this address is located.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PreviousAddress" type="xsd_1:EmployeeAddressType">
+<xsd:annotation>
+<xsd:documentation><p>The values prior to action taken. </p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="DaylightSavingsTimeZone" type="xsd_2:UTCTimeZoneType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The daylight savings time zone in which this address is located.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="EmployeeAddressType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A physical space where the employee or location resides, or where mail or deliveries can be made.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="StartDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The first date on which this address is in effect for the employee.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EndDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The last date on which this address is in effect for the employee.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Purpose" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The usage of this address, as defined by the employee; e.g., mailing, shipping.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Line1" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Text appearing on the first line of a formatted address.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Line2" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Text appearing on the second line of a formatted address.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Line3" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Text appearing on the third line of a formatted address.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Line4" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Text appearing on the fourth line of a formatted address.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Line5" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Text appearing on the fifth line of a formatted address.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Line6" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Text appearing on the sixth line of a formatted address.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="City" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>An incorporated city municipality; a subdivision of a territory.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="MinorSubdivision" type="xsd_2:CountrySubdivisionType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A political and administrative division of the major subdivision. This is a county in the U.S.A.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="MajorSubdivision" type="xsd_2:CountrySubdivisionType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A territorial division of a country. This is the state in the U.S.A. and the province in Canada.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PostalCode" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>A group of numbers or characters used to identity a mail delivery area.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Country" type="xsd_5:CountryIdentificationNameType">
+<xsd:annotation>
+<xsd:documentation><p>Nation controlled by its own government.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Latitude" type="xsd:float">
+<xsd:annotation>
+<xsd:documentation>
+<p>The angular distance north or south of the earth's equator, measured in degrees along a meridian.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Longitude" type="xsd:float">
+<xsd:annotation>
+<xsd:documentation>
+<p>Angular distance on the earth's surface, measured east or west from the prime meridian at Greenwich, England.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="GeoText" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Free-form text comprising spatial information.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="StandardTimeZone" type="xsd_2:UTCTimeZoneType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The standard time zone in which this address is located.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="DaylightSavingsTimeZone" type="xsd_2:UTCTimeZoneType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The daylight savings time zone in which this address is located.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="EmployeeDocumentChangeType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Mechanism for verifying the identity of a person. </p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Action" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>The activity affecting this information; e.g., Change, Delete, Insert.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="SourceDateTime" type="xsd:dateTime">
+<xsd:annotation>
+<xsd:documentation>
+<p>The date and time the information was created, modified, or deleted in the source system. </p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Number" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>The content of the identifying information. E.g., tax ID.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Description" type="xsd_6:IdentificationValidationDescriptionTypeEnumeration">
+<xsd:annotation>
+<xsd:documentation>
+<p>Description of a physical or digital resource used to identify a person.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Issuer" type="xsd_2:LocalizedStringType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The body or organization that granted this identifying document to the individual.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="IssuingCountry" type="xsd_4:CountryType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Country under whose auspices the identification was issued.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="IssueDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The date on which the identifying document was issued.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EffectiveDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The date on which the identifying document goes into effect.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ExpirationDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The last date on which the identifying document is valid.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ValidationDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>Date on which the identification was collected.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PreviousIdentityDocument" type="xsd_1:EmployeeDocumentType">
+<xsd:annotation>
+<xsd:documentation><p>The values prior to action taken. </p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="EmployeeDocumentType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Mechanism for verifying the identity of a person. </p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Number" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>The content of the identifying information. E.g., tax ID.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Description" type="xsd_6:IdentificationValidationDescriptionTypeEnumeration">
+<xsd:annotation>
+<xsd:documentation>
+<p>Description of a physical or digital resource used to identify a person.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Issuer" type="xsd_2:LocalizedStringType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The body or organization that granted this identifying document to the individual.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="IssuingCountry" type="xsd_4:CountryType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Country under whose auspices the identification was issued.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="IssueDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The date on which the identifying document was issued.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EffectiveDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The date on which the identifying document goes into effect.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ExpirationDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The last date on which the identifying document is valid.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ValidationDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>Date on which the identification was collected.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="EmployeeEMailChangeType">
+<xsd:annotation>
+<xsd:documentation>
+<p>An email box to which email messages are delivered. </p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Action" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>The activity affecting this information; e.g., Change, Delete, Insert.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="SourceDateTime" type="xsd:dateTime">
+<xsd:annotation>
+<xsd:documentation>
+<p>The date and time the information was created, modified, or deleted in the source system. </p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="StartDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The first date on which this email address is in effect for the employee.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EndDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The last date on which this email address is in effect for the employee.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Purpose" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The usage of this email address, as defined by the employee; e.g., personal, work.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Address" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>The string of text identifying the mailbox where email messages are received. </p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PrimaryIndicator" type="xsd:boolean">
+<xsd:annotation>
+<xsd:documentation>
+<p>A flag indicating whether or not this is the employee's primary email address.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PreviousEmail" type="xsd_1:EmployeeEMailType">
+<xsd:annotation>
+<xsd:documentation><p>The values prior to action taken. </p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="EmployeeEMailType">
+<xsd:annotation>
+<xsd:documentation>
+<p>An email box to which email messages are delivered. </p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="StartDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The first date on which this email address is in effect for the employee.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EndDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The last date on which this email address is in effect for the employee.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Purpose" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The usage of this email address, as defined by the employee; e.g., personal, work.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Address" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>The string of text identifying the mailbox where email messages are received. </p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PrimaryIndicator" type="xsd:boolean">
+<xsd:annotation>
+<xsd:documentation>
+<p>A flag indicating whether or not this is the employee's primary email address.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="EmployeeEventChangeType">
+<xsd:annotation>
+<xsd:documentation>
+<p>An occurrence that affects a person's employment status; e.g., resignation, suspension, reinstatement, LOA with benefits.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Action" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>The activity affecting this information; e.g., Change, Delete, Insert.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="SourceDateTime" type="xsd:dateTime">
+<xsd:annotation>
+<xsd:documentation>
+<p>The date and time the information was created, modified, or deleted in the source system. </p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="StartDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation><p>The date on which this action takes effect.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EndDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The last date on which this employee action is in effect; may be a future date.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EventCategory" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Classification of the event that affects a person's employment status; e.g., resignation, suspension, reinstatement, LOA with benefits.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EventReason" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation><p>The cause or basis of an employee action.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PreviousEvent" type="xsd_1:EmployeeEventType">
+<xsd:annotation>
+<xsd:documentation><p>The values prior to action taken. </p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="EmployeeEventType">
+<xsd:annotation>
+<xsd:documentation>
+<p>An occurrence that affects a person's employment status; e.g., resignation, suspension, reinstatement, LOA with benefits.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="StartDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation><p>The date on which this action takes effect.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EndDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The last date on which this employee action is in effect; may be a future date.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EventCategory" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Classification of the event that affects a person's employment status; e.g., resignation, suspension, reinstatement, LOA with benefits.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EventReason" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation><p>The cause or basis of an employee action.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="EmployeeIndividualChangeType">
+<xsd:annotation>
+<xsd:documentation><p>A person.</p></xsd:documentation>
+</xsd:annotation>
+<xsd:sequence minOccurs="0">
+<xsd:element minOccurs="0" name="Action" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>The activity affecting this information; e.g., Change, Delete, Insert.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="SourceDateTime" type="xsd:dateTime">
+<xsd:annotation>
+<xsd:documentation>
+<p>The date and time the information was created, modified, or deleted in the source system. </p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="StartDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The first date on which this employee is in effect.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EndDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The last date on which this employee profile is in effect.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="BusinessPartnerIdentifier" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>A unique, business-meaningful identifier of a business partner. A business partner is a person or organization of interest to Costco. A single business partner may play many roles in relationship to Costco, such as employee, customer, and/or supplier.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Name" type="xsd_1:EmployeeNameType">
+<xsd:annotation>
+<xsd:documentation><p>A person's formal name.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PreferredName" type="xsd_1:EmployeeNameType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A less formal name that a person prefers to be called.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Gender" type="xsd_6:GenderType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The range of physical, biological, mental and behavioral characteristics pertaining to, and differentiating between, masculinity and femininity.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element maxOccurs="unbounded" minOccurs="0" name="IdentityDocument" type="xsd_1:EmployeeDocumentChangeType">
+<xsd:annotation>
+<xsd:documentation>
+<p>An official form of identification issued by an authorized body; e.g., passport, driver's license.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="BirthDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation><p>The date on which an individual was born.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Nationality" type="xsd_4:CountryType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The population of human beings whose members identify with each other, usually on the basis of citizenship in the same country.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="MaritalStatus" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The individual's status relative to the legal institution of marriage.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PreviousPerson" type="xsd_1:EmployeeIndividualType">
+<xsd:annotation>
+<xsd:documentation><p>The values prior to action taken. </p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="EmployeeIndividualType">
+<xsd:annotation>
+<xsd:documentation><p>A person.</p></xsd:documentation>
+</xsd:annotation>
+<xsd:sequence minOccurs="0">
+<xsd:element minOccurs="0" name="StartDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The first date on which this employee is in effect.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EndDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The last date on which this employee profile is in effect.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="BusinessPartnerIdentifier" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>A unique, business-meaningful identifier of a business partner. A business partner is a person or organization of interest to Costco. A single business partner may play many roles in relationship to Costco, such as employee, customer, and/or supplier.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Name" type="xsd_1:EmployeeNameType">
+<xsd:annotation>
+<xsd:documentation><p>A person's formal name.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PreferredName" type="xsd_1:EmployeeNameType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A less formal name that a person prefers to be called.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Gender" type="xsd_6:GenderType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The range of physical, biological, mental and behavioral characteristics pertaining to, and differentiating between, masculinity and femininity.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="BirthDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation><p>The date on which an individual was born.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Nationality" type="xsd_4:CountryType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The population of human beings whose members identify with each other, usually on the basis of citizenship in the same country.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="MaritalStatus" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The individual's status relative to the legal institution of marriage.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="EmployeeLocationType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A business unit in a distinct facility; e.g., a warehouse, a depot, or an administrative center.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Number" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Short-hand text by which the location is known.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Name" type="xsd_2:LocalizedStringType">
+<xsd:annotation>
+<xsd:documentation><p>Name of the location.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="LocationMajorClassification" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The highest level classification of a location based on usage; e.g., Depot, Warehouse.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="LocationMinorClassification" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The most granular level classification of a location based on usage; e.g.,a Depot (major classification) can be further classified as Wet. Dry, etc.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PhysicalAddress" type="xsd_1:EmployeeAddressType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The street number, name of the street, name of the town, and other particulars about the physical space where the location can be found.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Company" type="xsd_5:CostcoCompanyIdentificationNameType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A group of divisions as defined by Costco for operational reporting and management purposes.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="CompanyTerritory" type="xsd_2:RefNameType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A geographic area into which this location is organized for administrative purposes.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Division" type="xsd_2:RefNameType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A group of regions as defined by Costco for operational reporting and management purposes.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Region" type="xsd_2:RefNameType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A group of districts as defined by Costco for operational reporting and management purposes.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="District" type="xsd_2:RefNameType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A group of locations as defined by Costco for operational reporting and management purposes.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="GovernanceAgreement" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Union or other agreement that defines the employment guidelines that apply to some or all of the employees in this location.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="EmployeeNameType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A subset of name parts that are applicable to occidental name structure.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="FirstName" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Given name, typically appearing first of the name parts.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="MiddleName1" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Secondary given name, typically appearing between the first and last names.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="MiddleName2" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Additional secondary name, typically appearing after the first middle name.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="LastName" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Family name, typically inherited from a parent.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="AcademicTitle" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>A word or group of words attached to a person's name to show an honor, rank, or office; e.g., Ph.D.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Suffix" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>An explanation of the individual's first name; e.g., Jr, Sr, III.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Prefix" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>A title or honorific of an individual's name; e.g., Mr, Mrs, Dr, Rev, Prof.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="FullName" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation><p>Concatenation of name parts.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="EmployeePayChangeType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The amount of pay, corresponding to the wage category, earned by the employee.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Action" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>The activity affecting this information; e.g., Change, Delete, Insert.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="SourceDateTime" type="xsd:dateTime">
+<xsd:annotation>
+<xsd:documentation>
+<p>The date and time the information was created, modified, or deleted in the source system. </p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="StartDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The date on which this pay amount is first in effect.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EndDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The last date on which this pay amount is in effect.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="WageCategory" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The type of wage an employee may receive; e.g., base pay, shift differential.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Amount" type="xsd:decimal">
+<xsd:annotation>
+<xsd:documentation>
+<p>The rate of pay earned by the employee for the given wage category.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Currency" type="xsd_3:CurrencyType">
+<xsd:annotation>
+<xsd:documentation>
+<p>System of money in which the pay amount is denominated.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PreviousPay" type="xsd_1:EmployeePayType">
+<xsd:annotation>
+<xsd:documentation><p>The values prior to action taken. </p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="EmployeePayType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The amount of pay, corresponding to the wage category, earned by the employee.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="StartDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The date on which this pay amount is first in effect.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EndDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The last date on which this pay amount is in effect.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="WageCategory" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The type of wage an employee may receive; e.g., base pay, shift differential.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Amount" type="xsd:decimal">
+<xsd:annotation>
+<xsd:documentation>
+<p>The rate of pay earned by the employee for the given wage category.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Currency" type="xsd_3:CurrencyType">
+<xsd:annotation>
+<xsd:documentation>
+<p>System of money in which the pay amount is denominated.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="EmployeePositionChangeType">
+<xsd:annotation>
+<xsd:documentation>
+<p>An instantiation of a job, filled by an employee. There may be multiple positions associated with a job; e.g., there will be numerous positions for employees with the job of Cashier at a warehouse.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Action" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>The activity affecting this information; e.g., Change, Delete, Insert.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="SourceDateTime" type="xsd:dateTime">
+<xsd:annotation>
+<xsd:documentation>
+<p>The date and time the information was created, modified, or deleted in the source system. </p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="StartDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The first date on which this employee filled this position.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EndDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The last date on which this employee filled this position.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Code" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Short-hand text by which the position is known.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Description" type="xsd_2:LocalizedStringType">
+<xsd:annotation>
+<xsd:documentation><p>Name of the position.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Job" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The named set of functions, duties, and responsibilities carried out by a Costco employee. This position is one instance of this job.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="SupervisorEmployeeNumber" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>A Costco-assigned identifier for the employee who this employee reports to.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Location" type="xsd_1:EmployeeLocationType">
+<xsd:annotation>
+<xsd:documentation><p>The Costco location that owns the position.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="CostCenter" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Account to which costs and profits are allocated for this position.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Department" type="xsd_2:RefType"/>
+<xsd:element minOccurs="0" name="PayScaleCategory" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A broad category of pay scale based on method of pay calculation (hourly vs salary) as well as geography (Canadian province) and union agreement (WC vs EC union).</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PayScaleArea" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Category of pay scale based on type of skill required; e.g., Meat Cutter, Service Clerk, IS Operator.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PayScaleGroup" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Category of pay scale based upon the year of the agreement under which the employee was hired; e.g., 20070430, 20130304.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PayScaleLevel" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Category of pay scale based upon expertise or years experience.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PersonnelArea" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The division, grouped for administrative access purposes, that this employee belongs to. A personnel area may be a location (in Canada) or a state or part of a state (in U.S.)</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PersonnelSubArea" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Concatenation of the department and location codes.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EmployeeGroup" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The employee's classification based upon work schedule or special circumstances; e.g., regular, intermittent, seasonal, temporary, executive, expat, inpat, non-employee, expat executive.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EmployeeSubGroup" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>This employee's category based upon payroll considerations; e.g., part-time hourly with overtime under employee agreement, full-time hourly with overtime under employee agreement, part-time hourly with overtime under East Coast Union (ECU).</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="AnnualSalary" type="xsd_3:MoneyType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Employee's current gross pay per year for normal working hours.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="WeeklyWorkHours" type="xsd:decimal">
+<xsd:annotation>
+<xsd:documentation>
+<p>The number of hours per week an employee normally works.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="AnnualWorkHours" type="xsd:decimal">
+<xsd:annotation>
+<xsd:documentation>
+<p>The number of hours per year an employee normally works; number of hours pay is based upon.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="WorkScheduleRule" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The set of regulations and principles governing an employee's work schedule. </p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="GovernanceAgreement" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Union or other agreement that defines the guidelines under which the individual is employed.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PreviousPosition" type="xsd_1:EmployeePositionType">
+<xsd:annotation>
+<xsd:documentation><p>The values prior to action taken. </p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="EmployeePositionType">
+<xsd:annotation>
+<xsd:documentation>
+<p>An instantiation of a job, filled by an employee. There may be multiple positions associated with a job; e.g., there will be numerous positions for employees with the job of Cashier at a warehouse.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="StartDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The first date on which this employee filled this position.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EndDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The last date on which this employee filled this position.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Code" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Short-hand text by which the position is known.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Description" type="xsd_2:LocalizedStringType">
+<xsd:annotation>
+<xsd:documentation><p>Name of the position.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Job" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The named set of functions, duties, and responsibilities carried out by a Costco employee. This position is one instance of this job.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="SupervisorEmployeeNumber" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>A Costco-assigned identifier for the employee who this employee reports to.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Location" type="xsd_1:EmployeeLocationType">
+<xsd:annotation>
+<xsd:documentation><p>The Costco location that owns the position.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="CostCenter" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Account to which costs and profits are allocated for this position.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Department" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Costco-defined part of the business that deals with a specific area of activity; e.g., Human Resources, Membership, Accounting, Majors, Produce.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PayScaleCategory" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A broad category of pay scale based on method of pay calculation (hourly vs salary) as well as geography (Canadian province) and union agreement (WC vs EC union).</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PayScaleArea" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Category of pay scale based on type of skill required; e.g., Meat Cutter, Service Clerk, IS Operator.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PayScaleGroup" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Category of pay scale based upon the year of the agreement under which the employee was hired; e.g., 20070430, 20130304.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PayScaleLevel" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Category of pay scale based upon expertise or years experience.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PersonnelArea" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The division, grouped for administrative access purposes, that this employee belongs to. A personnel area may be a location (in Canada) or a state or part of a state (in U.S.)</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PersonnelSubArea" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Concatenation of the department and location codes.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EmployeeGroup" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The employee's classification based upon work schedule or special circumstances; e.g., regular, intermittent, seasonal, temporary, executive, expat, inpat, non-employee, expat executive.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EmployeeSubGroup" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>This employee's category based upon payroll considerations; e.g., part-time hourly with overtime under employee agreement, full-time hourly with overtime under employee agreement, part-time hourly with overtime under East Coast Union (ECU).</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="AnnualSalary" type="xsd_3:MoneyType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Employee's current gross pay per year for normal working hours.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="WeeklyWorkHours" type="xsd:decimal">
+<xsd:annotation>
+<xsd:documentation>
+<p>The number of hours per week an employee normally works.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="AnnualWorkHours" type="xsd:decimal">
+<xsd:annotation>
+<xsd:documentation>
+<p>The number of hours per year an employee normally works; number of hours pay is based upon.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="WorkScheduleRule" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The set of regulations and principles governing an employee's work schedule. </p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="GovernanceAgreement" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Union or other agreement that defines the guidelines under which the individual is employed.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="EmployeePreviousType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A person who is currently or has been previously employed by Costco in an arrangement covered by the Fair Labor Standards Act.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="EmployeeNumber" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>A Costco-assigned identifier for the employee.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element maxOccurs="unbounded" minOccurs="0" name="EmploymentStatus" type="xsd_2:RefDateType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The life cycle state of the person's employment relationship with Costco; e.g., withdrawn, inactive, retiree, active.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PreferredLanguage" type="xsd_2:ISOLanguageType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Method of communication this employee prefers to use at work.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Company" type="xsd_5:CostcoCompanyIdentificationNameType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Identifier of the financial company responsible for the employee.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="OriginalHireDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The date on which the employee first came to work for Costco.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="AdjustedHireDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The date used to determine the employee's eligibility for benefits.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="MostRecentHireDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The most recent date a previously terminated employee came back to work for Costco.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ProbationEndDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The last date on which the employee is considered to be in a probationary status.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="SeniorityDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The date used to determine the employee's ranking for privileges based upon length of service; this is usually, but not always, the hire date.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ServiceDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>Date in the future on which benefits will be reset. Date is updated annually.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="TerminationDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The last date the employee was actively employed with Costco.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PayrollClerkIndicator" type="xsd:boolean">
+<xsd:annotation>
+<xsd:documentation>
+<p>A flag indicating whether or not the employee can function as a payroll clerk, thus requiring a specialized level of security.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ProbationEndIndicator" type="xsd:boolean">
+<xsd:annotation>
+<xsd:documentation>
+<p>A flag indicating whether or not an employee has completed the probationary period; true indicates the employee has completed the probationary period.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="FlexTimeIndicator" type="xsd:boolean">
+<xsd:annotation>
+<xsd:documentation>
+<p>A flag indicating whether or not an employee has a flextime agree, such as a meal waiver.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="RehireIndicator" type="xsd:boolean">
+<xsd:annotation>
+<xsd:documentation>
+<p>A flag indicating whether or not the employee has been rehired after a period of being terminated; true indicates the employee is a rehire.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="FirstAidQualifiedIndicator" type="xsd:boolean">
+<xsd:annotation>
+<xsd:documentation>
+<p>A flag indicating whether or not the employee is qualified to administer first aid.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="CSRPIndicator" type="xsd:boolean">
+<xsd:annotation>
+<xsd:documentation>
+<p>College Student Retention Program Indicator; a flag indicating whether or not the employee is participating in the CSRP.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="UGRPIndicator" type="xsd:boolean">
+<xsd:annotation>
+<xsd:documentation>
+<p>University Graduate Retention Program Indicator; a flag indicating whether or not the employee is participating in the UGRP.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="EmployeeStatusChangeType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The life cycle state of the person's employment relationship with Costco; e.g., withdrawn, inactive, retiree, active.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Action" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>The activity affecting this information; e.g., Change, Delete, Insert.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="SourceDateTime" type="xsd:dateTime">
+<xsd:annotation>
+<xsd:documentation>
+<p>The date and time the information was created, modified, or deleted in the source system. </p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Code" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation><p>Short-hand label.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Description" type="xsd_2:LocalizedStringType">
+<xsd:annotation>
+<xsd:documentation><p>Name.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="StartDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The first date on which this status applies.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EndDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation><p>The last date on which this status applies.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PreviousStatus" type="xsd_1:EmployeeStatusType">
+<xsd:annotation>
+<xsd:documentation><p>The values prior to action taken. </p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="EmployeeStatusType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The life cycle state of the person's employment relationship with Costco; e.g., withdrawn, inactive, retiree, active.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Code" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation><p>Short-hand label.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Description" type="xsd_2:LocalizedStringType">
+<xsd:annotation>
+<xsd:documentation><p>Name.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="StartDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The first date on which this status applies.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EndDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation><p>The last date on which this status applies.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="EmployeeTelephoneChangeType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A set of figures identifying a telephone where an employee can be reached, used in making connections to it.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Action" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>The activity affecting this information; e.g., Change, Delete, Insert.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="SourceDateTime" type="xsd:dateTime">
+<xsd:annotation>
+<xsd:documentation>
+<p>The date and time the information was created, modified, or deleted in the source system. </p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="StartDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The first date on which this telephone number is in effect for the employee.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EndDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The last date on which this telephone number is in effect for the employee.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Purpose" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The usage of this telephone number, as defined by the employee; e.g., personal, work.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ITUCode" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Number defined by the International Telecommunication Union (ITU), used to reach a specific country when making an international call. </p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="AreaCode" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>A three-digit number that identifies one of the telephone service regions into which the US, Canada, and certain other countries are divided and that is dialed when calling from one area to another. </p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="LocalNumber" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>String of numbers that can be dialed to reach a telephone.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ExtensionNumber" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Numbers used to reach one of multiple telephones wired to the same primary number.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="TimeZone" type="xsd_2:UTCTimeZoneType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Time zone the owner of this telephone number usually operates in.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Country" type="xsd_4:CountryType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The country corresponding to the ITU code of this telephone number.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PreviousTelephone" type="xsd_1:EmployeeTelephoneType">
+<xsd:annotation>
+<xsd:documentation><p>The values prior to action taken. </p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="EmployeeTelephoneType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A set of figures identifying a telephone where an employee can be reached, used in making connections to it.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="StartDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The first date on which this telephone number is in effect for the employee.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EndDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The last date on which this telephone number is in effect for the employee.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Purpose" type="xsd_2:RefType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The usage of this telephone number, as defined by the employee; e.g., personal, work.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ITUCode" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Number defined by the International Telecommunication Union (ITU), used to reach a specific country when making an international call. </p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="AreaCode" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>A three-digit number that identifies one of the telephone service regions into which the US, Canada, and certain other countries are divided and that is dialed when calling from one area to another. </p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="LocalNumber" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>String of numbers that can be dialed to reach a telephone.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ExtensionNumber" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>Numbers used to reach one of multiple telephones wired to the same primary number.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="TimeZone" type="xsd_2:UTCTimeZoneType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Time zone the owner of this telephone number usually operates in.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Country" type="xsd_4:CountryType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The country corresponding to the ITU code of this telephone number.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="EmployeeType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A person who is currently or has been previously employed by Costco in an arrangement covered by the Fair Labor Standards Act.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Action" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>The activity affecting this information; e.g., Change, Delete, Insert.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="SourceDateTime" type="xsd:dateTime">
+<xsd:annotation>
+<xsd:documentation>
+<p>The date and time the information was created, modified, or deleted in the source system. </p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="EmployeeNumber" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>A Costco-assigned identifier for the employee.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element maxOccurs="unbounded" minOccurs="0" name="Person" type="xsd_1:EmployeeIndividualChangeType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The individual playing the role of employee.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element maxOccurs="unbounded" minOccurs="0" name="EmploymentStatus" type="xsd_1:EmployeeStatusChangeType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The life cycle state of the person's employment relationship with Costco; e.g., withdrawn, inactive, retiree, active.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PreferredLanguage" type="xsd_2:ISOLanguageType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Method of communication this employee prefers to use at work.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Company" type="xsd_5:CostcoCompanyIdentificationNameType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Identifier of the financial company responsible for the employee.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="OriginalHireDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The date on which the employee first came to work for Costco.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="AdjustedHireDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The date used to determine the employee's eligibility for benefits.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="MostRecentHireDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The most recent date a previously terminated employee came back to work for Costco.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ProbationEndDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The last date on which the employee is considered to be in a probationary status.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="SeniorityDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The date used to determine the employee's ranking for privileges based upon length of service; this is usually, but not always, the hire date.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ServiceDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>Date in the future on which benefits will be reset. Date is updated annually.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="TerminationDate" type="xsd:date">
+<xsd:annotation>
+<xsd:documentation>
+<p>The last date the employee was actively employed with Costco.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PayrollClerkIndicator" type="xsd:boolean">
+<xsd:annotation>
+<xsd:documentation>
+<p>A flag indicating whether or not the employee can function as a payroll clerk, thus requiring a specialized level of security.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ProbationEndIndicator" type="xsd:boolean">
+<xsd:annotation>
+<xsd:documentation>
+<p>A flag indicating whether or not an employee has completed the probationary period; true indicates the employee has completed the probationary period.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="FlexTimeIndicator" type="xsd:boolean">
+<xsd:annotation>
+<xsd:documentation>
+<p>A flag indicating whether or not an employee has a flextime agree, such as a meal waiver.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="RehireIndicator" type="xsd:boolean">
+<xsd:annotation>
+<xsd:documentation>
+<p>A flag indicating whether or not the employee has been rehired after a period of being terminated; true indicates the employee is a rehire.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="FirstAidQualifiedIndicator" type="xsd:boolean">
+<xsd:annotation>
+<xsd:documentation>
+<p>A flag indicating whether or not the employee is qualified to administer first aid.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="CSRPIndicator" type="xsd:boolean">
+<xsd:annotation>
+<xsd:documentation>
+<p>College Student Retention Program Indicator; a flag indicating whether or not the employee is participating in the CSRP.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="UGRPIndicator" type="xsd:boolean">
+<xsd:annotation>
+<xsd:documentation>
+<p>University Graduate Retention Program Indicator; a flag indicating whether or not the employee is participating in the UGRP.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element maxOccurs="unbounded" minOccurs="0" name="Address" type="xsd_1:EmployeeAddressChangeType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Address used by an employee for a specified purpose.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element maxOccurs="unbounded" minOccurs="0" name="Telephone" type="xsd_1:EmployeeTelephoneChangeType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Telephone number used by an employee for a specified purpose.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element maxOccurs="unbounded" minOccurs="0" name="Email" type="xsd_1:EmployeeEMailChangeType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Email address used by an employee for a specified purpose.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element maxOccurs="unbounded" minOccurs="0" name="Event" type="xsd_1:EmployeeEventChangeType">
+<xsd:annotation>
+<xsd:documentation>
+<p>An event that affects a person's employment status; e.g., resignation, suspension, reinstatement, LOA with benefits.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element maxOccurs="unbounded" minOccurs="0" name="Position" type="xsd_1:EmployeePositionChangeType">
+<xsd:annotation>
+<xsd:documentation>
+<p>An instantiation of a job, filled by an employee. There may be multiple positions associated with a job; e.g., there will be numerous positions for employees with the job of Cashier at a warehouse.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element maxOccurs="unbounded" minOccurs="0" name="Pay" type="xsd_1:EmployeePayChangeType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The amount of pay, corresponding to the wage category, earned by the employee.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="PreviousEmployee" type="xsd_1:EmployeePreviousType">
+<xsd:annotation>
+<xsd:documentation><p>The values prior to action taken. </p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:schema>
+<xsd:schema xmlns:xsd_1="http://costco.com/svc/businessAdministrationAndFinancials/HumanResources/EmployeeEventHandler/v1/types/" xmlns:xsd_2="http://costco.com/cdm/HumanResource/Employee/v6/" targetNamespace="http://costco.com/svc/businessAdministrationAndFinancials/HumanResources/EmployeeEventHandler/v1/types/" version="1.0">
+<xsd:complexType name="SendEventHandlerType">
+<xsd:sequence>
+<xsd:element maxOccurs="unbounded" minOccurs="0" name="Employee" type="xsd_2:EmployeeType"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:schema>
+<xsd:schema xmlns:xsd_1="http://costco.com/cdm/ContactPoint/v6/" xmlns:xsd_2="http://costco.com/cdm/Reference/v2/" targetNamespace="http://costco.com/cdm/ContactPoint/v6/" version="6.4">
+<xsd:complexType name="CountryType">
+<xsd:annotation>
+<xsd:documentation>
+<p>A nation with its own government, occupying a particular territory.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element maxOccurs="unbounded" minOccurs="0" name="Name" type="xsd_2:LocalizedStringType">
+<xsd:annotation>
+<xsd:documentation><p>Text by which a country is known.</p></xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ShortName" type="xsd_2:LocalizedStringType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Abbreviated text by which a country is known.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ISO2CharacterCode" type="xsd_1:ISO2CountryCodeEnumeration">
+<xsd:annotation>
+<xsd:documentation>
+<p>Two-letter country code defined in ISO 3166-1 and published by the International Organization for Standardization.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ISO3CharacterCode" type="xsd_1:ISO3CharacterCountryCodeEnumeration">
+<xsd:annotation>
+<xsd:documentation>
+<p>Three-letter country code defined in ISO 3166-1 and published by the International Organization for Standardization.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ISO3DigitCode" type="xsd_1:ISO3DigitCountryCodeEnumeration">
+<xsd:annotation>
+<xsd:documentation>
+<p>Three-digit country code defined in ISO 3166-1 and published by the International Organization for Standardization.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:simpleType name="ISO2CountryCodeEnumeration">
+<xsd:annotation>
+<xsd:documentation>
+<p>List of two-letter country codes defined in ISO 3166-1 and published by the International Organization for Standardization.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:restriction base="xsd:string">
+<xsd:enumeration value="AD"/>
+<xsd:enumeration value="AE"/>
+<xsd:enumeration value="AF"/>
+<xsd:enumeration value="AG"/>
+<xsd:enumeration value="AI"/>
+<xsd:enumeration value="AL"/>
+<xsd:enumeration value="AM"/>
+<xsd:enumeration value="AN"/>
+<xsd:enumeration value="AO"/>
+<xsd:enumeration value="AQ"/>
+<xsd:enumeration value="AR"/>
+<xsd:enumeration value="AS"/>
+<xsd:enumeration value="AT"/>
+<xsd:enumeration value="AU"/>
+<xsd:enumeration value="AW"/>
+<xsd:enumeration value="AZ"/>
+<xsd:enumeration value="BA"/>
+<xsd:enumeration value="BB"/>
+<xsd:enumeration value="BD"/>
+<xsd:enumeration value="BE"/>
+<xsd:enumeration value="BF"/>
+<xsd:enumeration value="BG"/>
+<xsd:enumeration value="BH"/>
+<xsd:enumeration value="BI"/>
+<xsd:enumeration value="BJ"/>
+<xsd:enumeration value="BM"/>
+<xsd:enumeration value="BN"/>
+<xsd:enumeration value="BO"/>
+<xsd:enumeration value="BR"/>
+<xsd:enumeration value="BS"/>
+<xsd:enumeration value="BT"/>
+<xsd:enumeration value="BV"/>
+<xsd:enumeration value="BW"/>
+<xsd:enumeration value="BY"/>
+<xsd:enumeration value="BZ"/>
+<xsd:enumeration value="CA"/>
+<xsd:enumeration value="CC"/>
+<xsd:enumeration value="CD"/>
+<xsd:enumeration value="CF"/>
+<xsd:enumeration value="CG"/>
+<xsd:enumeration value="CH"/>
+<xsd:enumeration value="CI"/>
+<xsd:enumeration value="CK"/>
+<xsd:enumeration value="CL"/>
+<xsd:enumeration value="CM"/>
+<xsd:enumeration value="CN"/>
+<xsd:enumeration value="CO"/>
+<xsd:enumeration value="CR"/>
+<xsd:enumeration value="CU"/>
+<xsd:enumeration value="CV"/>
+<xsd:enumeration value="CX"/>
+<xsd:enumeration value="CY"/>
+<xsd:enumeration value="CZ"/>
+<xsd:enumeration value="DE"/>
+<xsd:enumeration value="DJ"/>
+<xsd:enumeration value="DK"/>
+<xsd:enumeration value="DM"/>
+<xsd:enumeration value="DO"/>
+<xsd:enumeration value="DZ"/>
+<xsd:enumeration value="EC"/>
+<xsd:enumeration value="EE"/>
+<xsd:enumeration value="EG"/>
+<xsd:enumeration value="EH"/>
+<xsd:enumeration value="ER"/>
+<xsd:enumeration value="ES"/>
+<xsd:enumeration value="ET"/>
+<xsd:enumeration value="FI"/>
+<xsd:enumeration value="FJ"/>
+<xsd:enumeration value="FK"/>
+<xsd:enumeration value="FM"/>
+<xsd:enumeration value="FO"/>
+<xsd:enumeration value="FR"/>
+<xsd:enumeration value="GA"/>
+<xsd:enumeration value="GB"/>
+<xsd:enumeration value="GD"/>
+<xsd:enumeration value="GE"/>
+<xsd:enumeration value="GF"/>
+<xsd:enumeration value="GH"/>
+<xsd:enumeration value="GI"/>
+<xsd:enumeration value="GL"/>
+<xsd:enumeration value="GM"/>
+<xsd:enumeration value="GN"/>
+<xsd:enumeration value="GP"/>
+<xsd:enumeration value="GQ"/>
+<xsd:enumeration value="GR"/>
+<xsd:enumeration value="GS"/>
+<xsd:enumeration value="GT"/>
+<xsd:enumeration value="GU"/>
+<xsd:enumeration value="GW"/>
+<xsd:enumeration value="GY"/>
+<xsd:enumeration value="HK"/>
+<xsd:enumeration value="HM"/>
+<xsd:enumeration value="HN"/>
+<xsd:enumeration value="HR"/>
+<xsd:enumeration value="HT"/>
+<xsd:enumeration value="HU"/>
+<xsd:enumeration value="ID"/>
+<xsd:enumeration value="IE"/>
+<xsd:enumeration value="IL"/>
+<xsd:enumeration value="IN"/>
+<xsd:enumeration value="IO"/>
+<xsd:enumeration value="IQ"/>
+<xsd:enumeration value="IR"/>
+<xsd:enumeration value="IS"/>
+<xsd:enumeration value="IT"/>
+<xsd:enumeration value="JM"/>
+<xsd:enumeration value="JO"/>
+<xsd:enumeration value="JP"/>
+<xsd:enumeration value="KE"/>
+<xsd:enumeration value="KG"/>
+<xsd:enumeration value="KH"/>
+<xsd:enumeration value="KI"/>
+<xsd:enumeration value="KM"/>
+<xsd:enumeration value="KN"/>
+<xsd:enumeration value="KP"/>
+<xsd:enumeration value="KR"/>
+<xsd:enumeration value="KW"/>
+<xsd:enumeration value="KY"/>
+<xsd:enumeration value="KZ"/>
+<xsd:enumeration value="LA"/>
+<xsd:enumeration value="LB"/>
+<xsd:enumeration value="LC"/>
+<xsd:enumeration value="LI"/>
+<xsd:enumeration value="LK"/>
+<xsd:enumeration value="LR"/>
+<xsd:enumeration value="LS"/>
+<xsd:enumeration value="LT"/>
+<xsd:enumeration value="LU"/>
+<xsd:enumeration value="LV"/>
+<xsd:enumeration value="LY"/>
+<xsd:enumeration value="MA"/>
+<xsd:enumeration value="MC"/>
+<xsd:enumeration value="MD"/>
+<xsd:enumeration value="MG"/>
+<xsd:enumeration value="MH"/>
+<xsd:enumeration value="MK"/>
+<xsd:enumeration value="ML"/>
+<xsd:enumeration value="MM"/>
+<xsd:enumeration value="MN"/>
+<xsd:enumeration value="MO"/>
+<xsd:enumeration value="MP"/>
+<xsd:enumeration value="MQ"/>
+<xsd:enumeration value="MR"/>
+<xsd:enumeration value="MS"/>
+<xsd:enumeration value="MT"/>
+<xsd:enumeration value="MU"/>
+<xsd:enumeration value="MV"/>
+<xsd:enumeration value="MW"/>
+<xsd:enumeration value="MX"/>
+<xsd:enumeration value="MY"/>
+<xsd:enumeration value="MZ"/>
+<xsd:enumeration value="NA"/>
+<xsd:enumeration value="NC"/>
+<xsd:enumeration value="NE"/>
+<xsd:enumeration value="NF"/>
+<xsd:enumeration value="NG"/>
+<xsd:enumeration value="NI"/>
+<xsd:enumeration value="NL"/>
+<xsd:enumeration value="NO"/>
+<xsd:enumeration value="NP"/>
+<xsd:enumeration value="NR"/>
+<xsd:enumeration value="NU"/>
+<xsd:enumeration value="NZ"/>
+<xsd:enumeration value="OM"/>
+<xsd:enumeration value="AX"/>
+<xsd:enumeration value="PE"/>
+<xsd:enumeration value="PF"/>
+<xsd:enumeration value="PG"/>
+<xsd:enumeration value="PH"/>
+<xsd:enumeration value="PK"/>
+<xsd:enumeration value="PL"/>
+<xsd:enumeration value="PM"/>
+<xsd:enumeration value="PN"/>
+<xsd:enumeration value="PR"/>
+<xsd:enumeration value="PS"/>
+<xsd:enumeration value="PT"/>
+<xsd:enumeration value="PW"/>
+<xsd:enumeration value="PY"/>
+<xsd:enumeration value="QA"/>
+<xsd:enumeration value="RE"/>
+<xsd:enumeration value="RO"/>
+<xsd:enumeration value="RU"/>
+<xsd:enumeration value="RW"/>
+<xsd:enumeration value="SA"/>
+<xsd:enumeration value="SB"/>
+<xsd:enumeration value="SC"/>
+<xsd:enumeration value="SD"/>
+<xsd:enumeration value="SE"/>
+<xsd:enumeration value="SG"/>
+<xsd:enumeration value="SH"/>
+<xsd:enumeration value="SI"/>
+<xsd:enumeration value="SJ"/>
+<xsd:enumeration value="SK"/>
+<xsd:enumeration value="SL"/>
+<xsd:enumeration value="SM"/>
+<xsd:enumeration value="SN"/>
+<xsd:enumeration value="SO"/>
+<xsd:enumeration value="SR"/>
+<xsd:enumeration value="ST"/>
+<xsd:enumeration value="SV"/>
+<xsd:enumeration value="SY"/>
+<xsd:enumeration value="SZ"/>
+<xsd:enumeration value="TC"/>
+<xsd:enumeration value="TD"/>
+<xsd:enumeration value="TF"/>
+<xsd:enumeration value="TG"/>
+<xsd:enumeration value="TH"/>
+<xsd:enumeration value="TJ"/>
+<xsd:enumeration value="TK"/>
+<xsd:enumeration value="TM"/>
+<xsd:enumeration value="TN"/>
+<xsd:enumeration value="TO"/>
+<xsd:enumeration value="BL"/>
+<xsd:enumeration value="TR"/>
+<xsd:enumeration value="TT"/>
+<xsd:enumeration value="TV"/>
+<xsd:enumeration value="TW"/>
+<xsd:enumeration value="TZ"/>
+<xsd:enumeration value="UA"/>
+<xsd:enumeration value="UG"/>
+<xsd:enumeration value="UM"/>
+<xsd:enumeration value="US"/>
+<xsd:enumeration value="UY"/>
+<xsd:enumeration value="UZ"/>
+<xsd:enumeration value="VA"/>
+<xsd:enumeration value="VC"/>
+<xsd:enumeration value="VE"/>
+<xsd:enumeration value="VG"/>
+<xsd:enumeration value="VI"/>
+<xsd:enumeration value="VN"/>
+<xsd:enumeration value="VU"/>
+<xsd:enumeration value="WF"/>
+<xsd:enumeration value="WS"/>
+<xsd:enumeration value="YE"/>
+<xsd:enumeration value="YT"/>
+<xsd:enumeration value="YU"/>
+<xsd:enumeration value="ZA"/>
+<xsd:enumeration value="ZM"/>
+<xsd:enumeration value="ZW"/>
+<xsd:enumeration value="GG"/>
+<xsd:enumeration value="IM"/>
+<xsd:enumeration value="JE"/>
+<xsd:enumeration value="ME"/>
+<xsd:enumeration value="MF"/>
+<xsd:enumeration value="PA"/>
+<xsd:enumeration value="RS"/>
+<xsd:enumeration value="SS"/>
+<xsd:enumeration value="TL"/>
+</xsd:restriction>
+</xsd:simpleType>
+<xsd:simpleType name="ISO3CharacterCountryCodeEnumeration">
+<xsd:annotation>
+<xsd:documentation>
+<p>List of three-letter country codes defined in ISO 3166-1 and published by the International Organization for Standardization.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:restriction base="xsd:string">
+<xsd:enumeration value="AFG"/>
+<xsd:enumeration value="ARG"/>
+<xsd:enumeration value="AUS"/>
+<xsd:enumeration value="BRA"/>
+<xsd:enumeration value="CAN"/>
+<xsd:enumeration value="CHL"/>
+<xsd:enumeration value="CHN"/>
+<xsd:enumeration value="ITA"/>
+<xsd:enumeration value="IRL"/>
+<xsd:enumeration value="MEX"/>
+<xsd:enumeration value="ESP"/>
+<xsd:enumeration value="GBR"/>
+<xsd:enumeration value="USA"/>
+<xsd:enumeration value="PRI"/>
+<xsd:enumeration value="FRA"/>
+<xsd:enumeration value="MYS"/>
+<xsd:enumeration value="JPN"/>
+<xsd:enumeration value="KOR"/>
+<xsd:enumeration value="HKG"/>
+<xsd:enumeration value="TWN"/>
+<xsd:enumeration value="SGP"/>
+<xsd:enumeration value="BGD"/>
+<xsd:enumeration value="ALA"/>
+<xsd:enumeration value="ALB"/>
+<xsd:enumeration value="DZA"/>
+<xsd:enumeration value="ASM"/>
+<xsd:enumeration value="AND"/>
+<xsd:enumeration value="AGO"/>
+<xsd:enumeration value="AIA"/>
+<xsd:enumeration value="ATA"/>
+<xsd:enumeration value="ATG"/>
+<xsd:enumeration value="ARM"/>
+<xsd:enumeration value="ABW"/>
+<xsd:enumeration value="AUT"/>
+<xsd:enumeration value="AZE"/>
+<xsd:enumeration value="BHS"/>
+<xsd:enumeration value="BHR"/>
+<xsd:enumeration value="ANT"/>
+<xsd:enumeration value="ARE"/>
+<xsd:enumeration value="ATF"/>
+<xsd:enumeration value="BDI"/>
+<xsd:enumeration value="BEL"/>
+<xsd:enumeration value="BEN"/>
+<xsd:enumeration value="BFA"/>
+<xsd:enumeration value="BGR"/>
+<xsd:enumeration value="BIH"/>
+<xsd:enumeration value="BLM"/>
+<xsd:enumeration value="BLR"/>
+<xsd:enumeration value="BLZ"/>
+<xsd:enumeration value="BMU"/>
+<xsd:enumeration value="BOL"/>
+<xsd:enumeration value="BRB"/>
+<xsd:enumeration value="BRN"/>
+<xsd:enumeration value="BTN"/>
+<xsd:enumeration value="BVT"/>
+<xsd:enumeration value="BWA"/>
+<xsd:enumeration value="CAF"/>
+<xsd:enumeration value="CCK"/>
+<xsd:enumeration value="CHE"/>
+<xsd:enumeration value="CIV"/>
+<xsd:enumeration value="CMR"/>
+<xsd:enumeration value="COD"/>
+<xsd:enumeration value="COG"/>
+<xsd:enumeration value="COK"/>
+<xsd:enumeration value="COL"/>
+<xsd:enumeration value="COM"/>
+<xsd:enumeration value="CPV"/>
+<xsd:enumeration value="CRI"/>
+<xsd:enumeration value="CUB"/>
+<xsd:enumeration value="CXR"/>
+<xsd:enumeration value="CYM"/>
+<xsd:enumeration value="CYP"/>
+<xsd:enumeration value="CZE"/>
+<xsd:enumeration value="DEU"/>
+<xsd:enumeration value="DJI"/>
+<xsd:enumeration value="DMA"/>
+<xsd:enumeration value="DNK"/>
+<xsd:enumeration value="DOM"/>
+<xsd:enumeration value="ECU"/>
+<xsd:enumeration value="EGY"/>
+<xsd:enumeration value="ERI"/>
+<xsd:enumeration value="ESH"/>
+<xsd:enumeration value="EST"/>
+<xsd:enumeration value="ETH"/>
+<xsd:enumeration value="FIN"/>
+<xsd:enumeration value="FJI"/>
+<xsd:enumeration value="FLK"/>
+<xsd:enumeration value="FRO"/>
+<xsd:enumeration value="FSM"/>
+<xsd:enumeration value="GAB"/>
+<xsd:enumeration value="GEO"/>
+<xsd:enumeration value="GGY"/>
+<xsd:enumeration value="GHA"/>
+<xsd:enumeration value="GIB"/>
+<xsd:enumeration value="GIN"/>
+<xsd:enumeration value="GLP"/>
+<xsd:enumeration value="GMB"/>
+<xsd:enumeration value="GNB"/>
+<xsd:enumeration value="GNQ"/>
+<xsd:enumeration value="GRC"/>
+<xsd:enumeration value="GRD"/>
+<xsd:enumeration value="GRL"/>
+<xsd:enumeration value="GTM"/>
+<xsd:enumeration value="GUF"/>
+<xsd:enumeration value="GUM"/>
+<xsd:enumeration value="GUY"/>
+<xsd:enumeration value="HMD"/>
+<xsd:enumeration value="HND"/>
+<xsd:enumeration value="HRV"/>
+<xsd:enumeration value="HTI"/>
+<xsd:enumeration value="HUN"/>
+<xsd:enumeration value="IDN"/>
+<xsd:enumeration value="IMN"/>
+<xsd:enumeration value="IND"/>
+<xsd:enumeration value="IOT"/>
+<xsd:enumeration value="IRN"/>
+<xsd:enumeration value="IRQ"/>
+<xsd:enumeration value="ISL"/>
+<xsd:enumeration value="ISR"/>
+<xsd:enumeration value="JAM"/>
+<xsd:enumeration value="JEY"/>
+<xsd:enumeration value="JOR"/>
+<xsd:enumeration value="KAZ"/>
+<xsd:enumeration value="KEN"/>
+<xsd:enumeration value="KGZ"/>
+<xsd:enumeration value="KHM"/>
+<xsd:enumeration value="KIR"/>
+<xsd:enumeration value="KNA"/>
+<xsd:enumeration value="KWT"/>
+<xsd:enumeration value="LAO"/>
+<xsd:enumeration value="LBN"/>
+<xsd:enumeration value="LBR"/>
+<xsd:enumeration value="LBY"/>
+<xsd:enumeration value="LCA"/>
+<xsd:enumeration value="LIE"/>
+<xsd:enumeration value="LKA"/>
+<xsd:enumeration value="LSO"/>
+<xsd:enumeration value="LTU"/>
+<xsd:enumeration value="LUX"/>
+<xsd:enumeration value="LVA"/>
+<xsd:enumeration value="MAC"/>
+<xsd:enumeration value="MAF"/>
+<xsd:enumeration value="MAR"/>
+<xsd:enumeration value="MCO"/>
+<xsd:enumeration value="MDA"/>
+<xsd:enumeration value="MDG"/>
+<xsd:enumeration value="MDV"/>
+<xsd:enumeration value="MHL"/>
+<xsd:enumeration value="MKD"/>
+<xsd:enumeration value="MLI"/>
+<xsd:enumeration value="MLT"/>
+<xsd:enumeration value="MMR"/>
+<xsd:enumeration value="MNE"/>
+<xsd:enumeration value="MNG"/>
+<xsd:enumeration value="MOZ"/>
+<xsd:enumeration value="MRT"/>
+<xsd:enumeration value="MSR"/>
+<xsd:enumeration value="MTQ"/>
+<xsd:enumeration value="MUS"/>
+<xsd:enumeration value="MWI"/>
+<xsd:enumeration value="MYT"/>
+<xsd:enumeration value="NAM"/>
+<xsd:enumeration value="NCL"/>
+<xsd:enumeration value="NER"/>
+<xsd:enumeration value="NFK"/>
+<xsd:enumeration value="NGA"/>
+<xsd:enumeration value="NIC"/>
+<xsd:enumeration value="NIU"/>
+<xsd:enumeration value="NLD"/>
+<xsd:enumeration value="NOR"/>
+<xsd:enumeration value="NPL"/>
+<xsd:enumeration value="NRU"/>
+<xsd:enumeration value="NZL"/>
+<xsd:enumeration value="OMN"/>
+<xsd:enumeration value="PAK"/>
+<xsd:enumeration value="PAN"/>
+<xsd:enumeration value="PCN"/>
+<xsd:enumeration value="PER"/>
+<xsd:enumeration value="PHL"/>
+<xsd:enumeration value="PLW"/>
+<xsd:enumeration value="PNG"/>
+<xsd:enumeration value="POL"/>
+<xsd:enumeration value="PRK"/>
+<xsd:enumeration value="PRT"/>
+<xsd:enumeration value="PRY"/>
+<xsd:enumeration value="PSE"/>
+<xsd:enumeration value="PYF"/>
+<xsd:enumeration value="QAT"/>
+<xsd:enumeration value="REU"/>
+<xsd:enumeration value="ROU"/>
+<xsd:enumeration value="RUS"/>
+<xsd:enumeration value="RWA"/>
+<xsd:enumeration value="SAU"/>
+<xsd:enumeration value="SDN"/>
+<xsd:enumeration value="SEN"/>
+<xsd:enumeration value="SGS"/>
+<xsd:enumeration value="SHN"/>
+<xsd:enumeration value="SJM"/>
+<xsd:enumeration value="SLB"/>
+<xsd:enumeration value="SLE"/>
+<xsd:enumeration value="SLV"/>
+<xsd:enumeration value="SMR"/>
+<xsd:enumeration value="SOM"/>
+<xsd:enumeration value="SPM"/>
+<xsd:enumeration value="SRB"/>
+<xsd:enumeration value="SSD"/>
+<xsd:enumeration value="STP"/>
+<xsd:enumeration value="SUR"/>
+<xsd:enumeration value="SVK"/>
+<xsd:enumeration value="SVN"/>
+<xsd:enumeration value="SWE"/>
+<xsd:enumeration value="SWZ"/>
+<xsd:enumeration value="SYC"/>
+<xsd:enumeration value="SYR"/>
+<xsd:enumeration value="TCA"/>
+<xsd:enumeration value="TCD"/>
+<xsd:enumeration value="TGO"/>
+<xsd:enumeration value="THA"/>
+<xsd:enumeration value="TJK"/>
+<xsd:enumeration value="TKL"/>
+<xsd:enumeration value="TKM"/>
+<xsd:enumeration value="TLS"/>
+<xsd:enumeration value="TON"/>
+<xsd:enumeration value="TTO"/>
+<xsd:enumeration value="TUN"/>
+<xsd:enumeration value="TUR"/>
+<xsd:enumeration value="TUV"/>
+<xsd:enumeration value="TZA"/>
+<xsd:enumeration value="UGA"/>
+<xsd:enumeration value="UKR"/>
+<xsd:enumeration value="UMI"/>
+<xsd:enumeration value="URY"/>
+<xsd:enumeration value="UZB"/>
+<xsd:enumeration value="VAT"/>
+<xsd:enumeration value="VCT"/>
+<xsd:enumeration value="VEN"/>
+<xsd:enumeration value="VGB"/>
+<xsd:enumeration value="VIR"/>
+<xsd:enumeration value="VNM"/>
+<xsd:enumeration value="VUT"/>
+<xsd:enumeration value="WLF"/>
+<xsd:enumeration value="WSM"/>
+<xsd:enumeration value="YEM"/>
+<xsd:enumeration value="ZAF"/>
+<xsd:enumeration value="ZMB"/>
+<xsd:enumeration value="ZWE"/>
+<xsd:enumeration value="MNP"/>
+</xsd:restriction>
+</xsd:simpleType>
+<xsd:simpleType name="ISO3DigitCountryCodeEnumeration">
+<xsd:annotation>
+<xsd:documentation>
+<p>List of three-digit country codes defined in ISO 3166-1 and published by the International Organization for Standardization.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:restriction base="xsd:string">
+<xsd:enumeration value="004"/>
+<xsd:enumeration value="032"/>
+<xsd:enumeration value="036"/>
+<xsd:enumeration value="076"/>
+<xsd:enumeration value="124"/>
+<xsd:enumeration value="152"/>
+<xsd:enumeration value="156"/>
+<xsd:enumeration value="380"/>
+<xsd:enumeration value="372"/>
+<xsd:enumeration value="484"/>
+<xsd:enumeration value="724"/>
+<xsd:enumeration value="826"/>
+<xsd:enumeration value="840"/>
+<xsd:enumeration value="630"/>
+<xsd:enumeration value="250"/>
+<xsd:enumeration value="458"/>
+<xsd:enumeration value="392"/>
+<xsd:enumeration value="410"/>
+<xsd:enumeration value="344"/>
+<xsd:enumeration value="158"/>
+<xsd:enumeration value="702"/>
+<xsd:enumeration value="008"/>
+<xsd:enumeration value="010"/>
+<xsd:enumeration value="012"/>
+<xsd:enumeration value="016"/>
+<xsd:enumeration value="020"/>
+<xsd:enumeration value="024"/>
+<xsd:enumeration value="028"/>
+<xsd:enumeration value="031"/>
+<xsd:enumeration value="040"/>
+<xsd:enumeration value="044"/>
+<xsd:enumeration value="048"/>
+<xsd:enumeration value="050"/>
+<xsd:enumeration value="051"/>
+<xsd:enumeration value="052"/>
+<xsd:enumeration value="056"/>
+<xsd:enumeration value="060"/>
+<xsd:enumeration value="064"/>
+<xsd:enumeration value="068"/>
+<xsd:enumeration value="070"/>
+<xsd:enumeration value="072"/>
+<xsd:enumeration value="074"/>
+<xsd:enumeration value="084"/>
+<xsd:enumeration value="086"/>
+<xsd:enumeration value="090"/>
+<xsd:enumeration value="092"/>
+<xsd:enumeration value="096"/>
+<xsd:enumeration value="100"/>
+<xsd:enumeration value="104"/>
+<xsd:enumeration value="108"/>
+<xsd:enumeration value="112"/>
+<xsd:enumeration value="116"/>
+<xsd:enumeration value="120"/>
+<xsd:enumeration value="132"/>
+<xsd:enumeration value="136"/>
+<xsd:enumeration value="140"/>
+<xsd:enumeration value="144"/>
+<xsd:enumeration value="148"/>
+<xsd:enumeration value="162"/>
+<xsd:enumeration value="166"/>
+<xsd:enumeration value="170"/>
+<xsd:enumeration value="174"/>
+<xsd:enumeration value="175"/>
+<xsd:enumeration value="178"/>
+<xsd:enumeration value="180"/>
+<xsd:enumeration value="184"/>
+<xsd:enumeration value="188"/>
+<xsd:enumeration value="191"/>
+<xsd:enumeration value="192"/>
+<xsd:enumeration value="196"/>
+<xsd:enumeration value="203"/>
+<xsd:enumeration value="204"/>
+<xsd:enumeration value="208"/>
+<xsd:enumeration value="212"/>
+<xsd:enumeration value="214"/>
+<xsd:enumeration value="218"/>
+<xsd:enumeration value="222"/>
+<xsd:enumeration value="226"/>
+<xsd:enumeration value="231"/>
+<xsd:enumeration value="232"/>
+<xsd:enumeration value="233"/>
+<xsd:enumeration value="234"/>
+<xsd:enumeration value="238"/>
+<xsd:enumeration value="239"/>
+<xsd:enumeration value="242"/>
+<xsd:enumeration value="246"/>
+<xsd:enumeration value="248"/>
+<xsd:enumeration value="254"/>
+<xsd:enumeration value="258"/>
+<xsd:enumeration value="260"/>
+<xsd:enumeration value="262"/>
+<xsd:enumeration value="266"/>
+<xsd:enumeration value="268"/>
+<xsd:enumeration value="270"/>
+<xsd:enumeration value="275"/>
+<xsd:enumeration value="276"/>
+<xsd:enumeration value="288"/>
+<xsd:enumeration value="292"/>
+<xsd:enumeration value="296"/>
+<xsd:enumeration value="300"/>
+<xsd:enumeration value="304"/>
+<xsd:enumeration value="308"/>
+<xsd:enumeration value="312"/>
+<xsd:enumeration value="316"/>
+<xsd:enumeration value="320"/>
+<xsd:enumeration value="324"/>
+<xsd:enumeration value="328"/>
+<xsd:enumeration value="332"/>
+<xsd:enumeration value="334"/>
+<xsd:enumeration value="336"/>
+<xsd:enumeration value="340"/>
+<xsd:enumeration value="348"/>
+<xsd:enumeration value="352"/>
+<xsd:enumeration value="356"/>
+<xsd:enumeration value="360"/>
+<xsd:enumeration value="364"/>
+<xsd:enumeration value="368"/>
+<xsd:enumeration value="376"/>
+<xsd:enumeration value="384"/>
+<xsd:enumeration value="388"/>
+<xsd:enumeration value="398"/>
+<xsd:enumeration value="400"/>
+<xsd:enumeration value="404"/>
+<xsd:enumeration value="408"/>
+<xsd:enumeration value="414"/>
+<xsd:enumeration value="417"/>
+<xsd:enumeration value="418"/>
+<xsd:enumeration value="422"/>
+<xsd:enumeration value="426"/>
+<xsd:enumeration value="428"/>
+<xsd:enumeration value="430"/>
+<xsd:enumeration value="434"/>
+<xsd:enumeration value="438"/>
+<xsd:enumeration value="440"/>
+<xsd:enumeration value="442"/>
+<xsd:enumeration value="446"/>
+<xsd:enumeration value="450"/>
+<xsd:enumeration value="454"/>
+<xsd:enumeration value="462"/>
+<xsd:enumeration value="466"/>
+<xsd:enumeration value="470"/>
+<xsd:enumeration value="474"/>
+<xsd:enumeration value="478"/>
+<xsd:enumeration value="480"/>
+<xsd:enumeration value="492"/>
+<xsd:enumeration value="496"/>
+<xsd:enumeration value="498"/>
+<xsd:enumeration value="499"/>
+<xsd:enumeration value="500"/>
+<xsd:enumeration value="504"/>
+<xsd:enumeration value="508"/>
+<xsd:enumeration value="512"/>
+<xsd:enumeration value="516"/>
+<xsd:enumeration value="520"/>
+<xsd:enumeration value="524"/>
+<xsd:enumeration value="528"/>
+<xsd:enumeration value="530"/>
+<xsd:enumeration value="533"/>
+<xsd:enumeration value="540"/>
+<xsd:enumeration value="548"/>
+<xsd:enumeration value="554"/>
+<xsd:enumeration value="558"/>
+<xsd:enumeration value="562"/>
+<xsd:enumeration value="566"/>
+<xsd:enumeration value="570"/>
+<xsd:enumeration value="574"/>
+<xsd:enumeration value="578"/>
+<xsd:enumeration value="580"/>
+<xsd:enumeration value="581"/>
+<xsd:enumeration value="583"/>
+<xsd:enumeration value="584"/>
+<xsd:enumeration value="585"/>
+<xsd:enumeration value="586"/>
+<xsd:enumeration value="591"/>
+<xsd:enumeration value="598"/>
+<xsd:enumeration value="600"/>
+<xsd:enumeration value="604"/>
+<xsd:enumeration value="608"/>
+<xsd:enumeration value="612"/>
+<xsd:enumeration value="616"/>
+<xsd:enumeration value="620"/>
+<xsd:enumeration value="624"/>
+<xsd:enumeration value="626"/>
+<xsd:enumeration value="634"/>
+<xsd:enumeration value="638"/>
+<xsd:enumeration value="642"/>
+<xsd:enumeration value="643"/>
+<xsd:enumeration value="646"/>
+<xsd:enumeration value="652"/>
+<xsd:enumeration value="654"/>
+<xsd:enumeration value="659"/>
+<xsd:enumeration value="660"/>
+<xsd:enumeration value="662"/>
+<xsd:enumeration value="663"/>
+<xsd:enumeration value="666"/>
+<xsd:enumeration value="670"/>
+<xsd:enumeration value="674"/>
+<xsd:enumeration value="678"/>
+<xsd:enumeration value="682"/>
+<xsd:enumeration value="686"/>
+<xsd:enumeration value="688"/>
+<xsd:enumeration value="690"/>
+<xsd:enumeration value="694"/>
+<xsd:enumeration value="703"/>
+<xsd:enumeration value="704"/>
+<xsd:enumeration value="705"/>
+<xsd:enumeration value="706"/>
+<xsd:enumeration value="710"/>
+<xsd:enumeration value="716"/>
+<xsd:enumeration value="728"/>
+<xsd:enumeration value="732"/>
+<xsd:enumeration value="736"/>
+<xsd:enumeration value="740"/>
+<xsd:enumeration value="744"/>
+<xsd:enumeration value="748"/>
+<xsd:enumeration value="752"/>
+<xsd:enumeration value="756"/>
+<xsd:enumeration value="760"/>
+<xsd:enumeration value="762"/>
+<xsd:enumeration value="764"/>
+<xsd:enumeration value="768"/>
+<xsd:enumeration value="772"/>
+<xsd:enumeration value="776"/>
+<xsd:enumeration value="780"/>
+<xsd:enumeration value="784"/>
+<xsd:enumeration value="788"/>
+<xsd:enumeration value="792"/>
+<xsd:enumeration value="795"/>
+<xsd:enumeration value="796"/>
+<xsd:enumeration value="798"/>
+<xsd:enumeration value="800"/>
+<xsd:enumeration value="804"/>
+<xsd:enumeration value="807"/>
+<xsd:enumeration value="818"/>
+<xsd:enumeration value="831"/>
+<xsd:enumeration value="832"/>
+<xsd:enumeration value="833"/>
+<xsd:enumeration value="834"/>
+<xsd:enumeration value="850"/>
+<xsd:enumeration value="854"/>
+<xsd:enumeration value="858"/>
+<xsd:enumeration value="860"/>
+<xsd:enumeration value="862"/>
+<xsd:enumeration value="876"/>
+<xsd:enumeration value="882"/>
+<xsd:enumeration value="887"/>
+<xsd:enumeration value="894"/>
+</xsd:restriction>
+</xsd:simpleType>
+</xsd:schema>
+<xsd:schema xmlns:xsd_1="http://costco.com/cdm/Identity/v1/" xmlns:xsd_2="http://costco.com/cdm/Reference/v2/" targetNamespace="http://costco.com/cdm/Identity/v1/" version="1.15">
+<xsd:complexType name="CostcoCompanyIdentificationNameType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Text and numbers that uniquely identify a Costco company, an independent and legal accounting entity that constitutes the highest level of the Costco organization hierarchies.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Number" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>A series of characters uniquely identifying the company; e.g., 001=Costco USA; 004=Costco Canada.</p><p></p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element maxOccurs="unbounded" minOccurs="0" name="Name" type="xsd_2:LocalizedStringType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Label by which the company is commonly known; e.g., Costco USA, Costco Canada.</p><p></p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="Country" type="xsd_1:CountryIdentificationNameType">
+<xsd:annotation>
+<xsd:documentation>
+<p>The country in which the Costco company is legally established.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="CountryIdentificationNameType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Text and numbers that uniquely identify a nation with its own government, occupying a particular territory.</p>
+</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element maxOccurs="unbounded" minOccurs="0" name="Name" type="xsd_2:LocalizedStringType">
+<xsd:annotation>
+<xsd:documentation>
+<p>Label by which the country is commonly known.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ISO2Code" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>A two-letter code for the country, defined in ISO 3166-1 and published by the International Organization for Standardization.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ISO3CharacterCode" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>A three-letter code for the country, defined in ISO 3166-1 and published by the International Organization for Standardization.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+<xsd:element minOccurs="0" name="ISO3DigitCode" type="xsd:string">
+<xsd:annotation>
+<xsd:documentation>
+<p>A three-digit code for the country defined in ISO 3166-1 and published by the International Organization for Standardization.</p>
+</xsd:documentation>
+</xsd:annotation>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:schema>
+<xsd:schema xmlns:xsd_1="http://costco.com/cmm/common/v2/" xmlns:xsd_2="http://costco.com/svc/businessAdministrationAndFinancials/HumanResources/EmployeeEventHandler/external/types/" targetNamespace="http://costco.com/svc/businessAdministrationAndFinancials/HumanResources/EmployeeEventHandler/external/">
+<xsd:element name="ServiceException" type="xsd_1:FaultType"/>
+<xsd:element name="heartbeat">
+<xsd:complexType>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="AliveAndWell" type="xsd:boolean"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+
+<xsd:element name="heartbeatResponse">
+	<xsd:complexType>
+		<xsd:sequence>
+			<xsd:element name="Response" type="xsd_1:StatusMessageType"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:element>
+
+<xsd:element name="sendEvent">
+<xsd:complexType>
+<xsd:sequence>
+<xsd:element name="Request" type="xsd_2:SendEventHandlerType"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+
+<dummy></dummy>
+<xsd:element name="sendEventResponse">
+	<xsd:complexType>
+		<xsd:sequence>
+			<xsd:element name="Response">
+    			<xsd:complexType>
+      				<xsd:sequence>
+				        <xsd:element name="Context">
+          				<xsd:complexType>
+            				<xsd:sequence>
+				              <xsd:element type="xsd:string" name="MessageName"/>
+              				  <xsd:element type="xsd:dateTime" name="Timestamp"/>
+              				  <xsd:element type="xsd:string" name="SendingApplication"/>
+              				  <xsd:element type="xsd:string" name="TrackingId"/>
+              				  <xsd:element name="StatusMessage">
+                                    <xsd:complexType>
+                                      <xsd:sequence>
+                                      <xsd:element type="xsd:string" name="StatusCode"/>
+                                      </xsd:sequence>
+                                    </xsd:complexType>
+                              </xsd:element>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                        </xsd:element>
+      				</xsd:sequence>
+    			</xsd:complexType>
+  			</xsd:element>
+  		</xsd:sequence>
+	</xsd:complexType>  		
+</xsd:element>
+
+
+</xsd:schema>
+</wsdl:types>
+<wsdl:message name="heartbeatRequest">
+<wsdl:part element="tns:heartbeat" name="parameters"/>
+</wsdl:message>
+<wsdl:message name="heartbeatResponse">
+<wsdl:part element="tns:heartbeatResponse" name="parameters"/>
+</wsdl:message>
+<wsdl:message name="sendEventRequest">
+<wsdl:part element="tns:sendEvent" name="parameters"/>
+</wsdl:message>
+<wsdl:message name="sendEventResponse">
+	<wsdl:part name="parameters" element="tns:sendEventResponse"></wsdl:part></wsdl:message>
+<wsdl:message name="serviceExceptionMessage">
+<wsdl:part element="tns:ServiceException" name="Exception"/>
+</wsdl:message>
+<wsdl:portType name="EmployeeEventHandlerService">
+<wsdl:documentation><p>v1.0</p></wsdl:documentation>
+<wsdl:operation name="heartbeat">
+<wsdl:documentation>
+<p>This operation provides a health check for the service, suitable for use in automated monitoring applications. See https://sites.google.com/a/costco.com/appcoe/monitoring/soap-endpoints for more details</p>
+</wsdl:documentation>
+<wsdl:input message="tns:heartbeatRequest"/>
+<wsdl:output message="tns:heartbeatResponse"/>
+</wsdl:operation>
+<wsdl:operation name="sendEvent">
+<wsdl:input message="tns:sendEventRequest"/>
+<wsdl:output message="tns:sendEventResponse"/>
+<wsdl:fault message="tns:serviceExceptionMessage" name="sendEventFault"/>
+</wsdl:operation>
+</wsdl:portType>
+<wsdl:binding name="EmployeeEventHandlerServiceBinding" type="tns:EmployeeEventHandlerService">
+<soap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+<wsdl:operation name="heartbeat">
+<soap12:operation soapAction="http://costco.com/svc/businessAdministrationAndFinancials/HumanResources/EmployeeEventHandler/external/EmployeeEventHandlerServiceProvider/heartbeat/"/>
+<wsdl:input>
+<soap12:body parts="parameters" use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap12:body parts="parameters" use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="sendEvent">
+<soap12:operation soapAction="http://costco.com/svc/businessAdministrationAndFinancials/HumanResources/EmployeeEventHandler/external/EmployeeEventHandlerServiceProvider/sendEvent/"/>
+<wsdl:input>
+<soap12:body parts="parameters" use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap12:body use="literal"/>
+</wsdl:output>
+<wsdl:fault name="sendEventFault">
+<soap12:fault name="sendEventFault" use="literal"/>
+</wsdl:fault>
+</wsdl:operation>
+</wsdl:binding>
+<wsdl:service name="EmployeeEventHandlerServiceProvider">
+<wsdl:port binding="tns:EmployeeEventHandlerServiceBinding" name="EmployeeEventHandlerServicePort">
+<soap12:address location="https://b2b-gw-adt.np.costco.com/EmployeeEventHandler"/>
+</wsdl:port>
+</wsdl:service>
+</wsdl:definitions>
