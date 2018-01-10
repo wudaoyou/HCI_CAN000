@@ -1934,6 +1934,14 @@ Path to edmx: edmx/api4preview_sapsf_com_odata_v2.edmx</value>
           <key>httpAddressQuery</key>
           <value></value>
         </ifl:property>
+        <ifl:property>
+          <key>proxyHost</key>
+          <value></value>
+        </ifl:property>
+        <ifl:property>
+          <key>proxyPort</key>
+          <value></value>
+        </ifl:property>
       </bpmn2:extensionElements>
     </bpmn2:messageFlow>
   </bpmn2:collaboration>
