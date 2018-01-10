@@ -205,7 +205,8 @@ def Message processData(Message message) {
 	 if (changedSegmentOnly.toUpperCase() == "TRUE") {
 		 SFAPIParameters = "queryMode=delta;resultOptions=changedSegmentsOnly";
 	 } else {
-	     SFAPIParameters = "queryMode=periodDelta;resultOptions=isNotFirstQuery";
+	     //SFAPIParameters = "queryMode=periodDelta;resultOptions=isNotFirstQuery";
+	     SFAPIParameters = "queryMode=periodDelta";
 	 }
 
 	 if (multipleEvents.toUpperCase() == "TRUE") {
