@@ -1,5 +1,5 @@
 #Parameter data and values
-#Wed Jan 10 15:27:24 PST 2018
+#Fri Jan 12 11:00:02 PST 2018
 CUSTOM_MDF_OBJECTS=cust_employeeFlags
 CHANGED_SEGMENT_ONLY=FALSE
 ENABLE_LOGGING=TRUE
@@ -17,5 +17,5 @@ ERDB_authenticationMethod_153=Client Certificate
 DP_CERTIFICATE_ALIAS=hci_qas
 PERSON_ID_EXTERNAL=
 COMPANY=<company>
-EMPLOYEE_CLASS=
 SF_ENDPOINT=https\://api4.successfactors.com
+EMPLOYEE_CLASS=
