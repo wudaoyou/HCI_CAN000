@@ -5357,7 +5357,7 @@ ${exception.stacktrace}&#xD;
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_StartEvent_8" bpmnElement="StartEvent_8">
-        <dc:Bounds height="36.0" width="36.0" x="270.0" y="184.0"/>
+        <dc:Bounds height="36.0" width="36.0" x="270.0" y="142.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_104"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_3" bpmnElement="SequenceFlow_3" sourceElement="BPMNShape_StartEvent_2" targetElement="BPMNShape_CallActivity_1">
@@ -6492,8 +6492,9 @@ ${exception.stacktrace}&#xD;
         <bpmndi:BPMNLabel id="BPMNLabel_258"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_5" bpmnElement="SequenceFlow_5" sourceElement="BPMNShape_StartEvent_8" targetElement="BPMNShape_CallActivity_22">
-        <di:waypoint xsi:type="dc:Point" x="288.0" y="184.0"/>
-        <di:waypoint xsi:type="dc:Point" x="288.0" y="168.0"/>
+        <di:waypoint xsi:type="dc:Point" x="306.0" y="160.0"/>
+        <di:waypoint xsi:type="dc:Point" x="341.0" y="160.0"/>
+        <di:waypoint xsi:type="dc:Point" x="341.0" y="168.0"/>
         <di:waypoint xsi:type="dc:Point" x="376.0" y="168.0"/>
         <bpmndi:BPMNLabel id="BPMNLabel_259"/>
       </bpmndi:BPMNEdge>
